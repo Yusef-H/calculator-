@@ -44,6 +44,10 @@ function displayLengthError(displayBoard){
     displayBoard.textContent = 'ERROR';
 }
 
+function dotCheck(displayBoard, value){
+    return value == '.' && displayBoard.textContent.includes('.');
+}
+
 function updateDisplayNumber(value){
     if(memory.gotOpNow == true){
         clearDisplay();
@@ -52,6 +56,9 @@ function updateDisplayNumber(value){
     const displayBoard = document.querySelector('.display');
     if(!displayLengthCheck(displayBoard)){
         displayLengthError(displayBoard);
+        return;
+    }
+    if(dotCheck(displayBoard, value)){
         return;
     }
     displayBoard.textContent = displayBoard.textContent + value;
