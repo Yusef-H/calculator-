@@ -37,7 +37,6 @@ function operate(operator, firstNum, secondNum){
 }
 
 function displayLengthCheck(displayBoard){
-    console.log(displayBoard.textContent);
     return displayBoard.textContent.length <= 9;       
 }
 
@@ -118,7 +117,6 @@ function handleResult(){
 
 function handleMemoryOperations(opButton){
     if(memory.gotOpNow == true){
-        console.log("hi");
         memory.operation = opButton.textContent;
         return;
     }
@@ -167,11 +165,19 @@ function handleEqualsButton(){
     })
 }
 
+function handleClearButton(){
+    const clearButton = document.querySelector('.clear');
+    clearButton.addEventListener('click', () => {
+        clearDisplay();
+        resetMemory();
+    })
+}
 
 function handleCalculator(){
     handleNumberButtons();
     handleOperationButtons();
     handleEqualsButton();
+    handleClearButton();
 }
 
 
