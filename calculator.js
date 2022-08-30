@@ -104,6 +104,7 @@ function resetMemory(){
     memory.firstNum = '';
     memory.secondNum = '';
     operation = '';
+    gotOpNow = false;
 }
 
 function handleResult(){
@@ -115,7 +116,7 @@ function handleResult(){
     return result;
 }   
 
-function handleMemory(opButton){
+function handleMemoryOperations(opButton){
     if(memory.gotOpNow == true){
         console.log("hi");
         memory.operation = opButton.textContent;
@@ -142,13 +143,36 @@ function handleOperationButtons(){
     const operationsNodeList = document.querySelectorAll('.op');
     operationsNodeList.forEach((button)=>{
         button.addEventListener('click', ()=>{
-            handleMemory(button);
+            handleMemoryOperations(button);
             
         })
     })
 }
 
+function handleMemoryEquals(){
+    if(memory.operation != ''){
+        memory.secondNum = getDisplayNumber();
+        let result = operate(memory.operation, memory.firstNum, memory.secondNum);
+        updateDisplay(result);
+        memory.firstNum = result.toString();
+        memory.operation = '';
+        memory.gotOpNow = false;
+    }
+}
+
+function handleEqualsButton(){
+    const equalButton = document.querySelector('.equals');
+    equalButton.addEventListener('click', ()=>{
+        handleMemoryEquals();
+    })
+}
 
 
-handleNumberButtons();
-handleOperationButtons();
+function handleCalculator(){
+    handleNumberButtons();
+    handleOperationButtons();
+    handleEqualsButton();
+}
+
+
+handleCalculator();
