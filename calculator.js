@@ -26,7 +26,7 @@ function operate(operator, firstNum, secondNum){
         case '-':
             result = subtract(firstNum, secondNum);
             break;
-        case '*':
+        case 'x':
             result = multiply(firstNum, secondNum);
             break;
         case '/':
@@ -36,11 +36,23 @@ function operate(operator, firstNum, secondNum){
     return result;
 }
 
+function displayLengthCheck(displayBoard){
+    console.log(displayBoard.textContent);
+    return displayBoard.textContent.length <= 9;       
+}
+
+function displayLengthError(displayBoard){
+    displayBoard.textContent = 'ERROR';
+}
+
 function updateDisplayNumber(value){
+    if(memory.gotOpNow == true){
+        clearDisplay();
+        memory.gotOpNow = false;
+    }
     const displayBoard = document.querySelector('.display');
-    if(displayBoard.textContent.length > 9){
-        displayBoard.style.fontSize = '40px';
-        displayBoard.textContent = 'MAX NUMBER LENGTH EXCEEDED';
+    if(!displayLengthCheck(displayBoard)){
+        displayLengthError(displayBoard);
         return;
     }
     displayBoard.textContent = displayBoard.textContent + value;
@@ -49,6 +61,9 @@ function updateDisplayNumber(value){
 function updateDisplay(value){
     const displayBoard = document.querySelector('.display');
     displayBoard.textContent = value.toString();
+    if(!displayLengthCheck(displayBoard)){
+        displayLengthError(displayBoard);
+    }
 }
 
 
@@ -80,7 +95,7 @@ let memory = {
     firstNum: '',
     secondNum: '',
     operation: '',
-    gotOp: false
+    gotOpNow: false
 };
 
 
@@ -90,11 +105,44 @@ function resetMemory(){
     memory.secondNum = '';
     operation = '';
 }
+
+function handleResult(){
+    //display board should have the second number (or empty if nothing)
+    const displayBoard = document.querySelector('.display');
+    memory.secondNum = displayBoard.textContent;
+    let result = operate(memory.operation, memory.firstNum, memory.secondNum);
+    updateDisplay(result);
+    return result;
+}   
+
+function handleMemory(opButton){
+    if(memory.gotOpNow == true){
+        console.log("hi");
+        memory.operation = opButton.textContent;
+        return;
+    }
+    memory.gotOpNow = true;
+    if(memory.operation != ''){
+        if(memory.firstNum != ''){
+            let result = handleResult();
+            memory.firstNum = result;
+            memory.secondNum = '';
+            //get the new operation after handling the last one.
+            memory.operation = opButton.textContent;
+        }
+    }
+    else{
+        memory.firstNum = getDisplayNumber();
+        memory.operation = opButton.textContent;
+        memory.gotOpNow = true;
+    }
+}
+
 function handleOperationButtons(){
     const operationsNodeList = document.querySelectorAll('.op');
     operationsNodeList.forEach((button)=>{
         button.addEventListener('click', ()=>{
-            
+            handleMemory(button);
             
         })
     })
