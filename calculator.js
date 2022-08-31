@@ -36,11 +36,6 @@ function operate(operator, firstNum, secondNum){
     return result;
 }
 
-
-/**
- * These functions are used to check some edge cases so 
- * we can deal with them in other functions. 
- */
 function displayLengthCheck(displayBoard){
     return displayBoard.textContent.length <= 9;       
 }
@@ -85,9 +80,10 @@ function updateDisplayNumber(value){
 
 function updateDisplayOperation(value){
     const displayBoard = document.querySelector('.display');
+    console.log(value.toString());
     displayBoard.textContent = value.toString();
-    if(handleError(displayBoard)){
-        return;
+    if('-Infinity'.includes(value.toString())){
+        displayError(displayBoard);
     }
 }
 
@@ -146,7 +142,6 @@ function handleMemoryOperations(opButton){
         memory.operation = opButton.textContent;
         return;
     }
-    memory.gotOpNow = true;
     if(memory.operation != ''){
         if(memory.firstNum != ''){
             let result = handleResult();
