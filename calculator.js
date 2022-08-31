@@ -36,12 +36,24 @@ function operate(operator, firstNum, secondNum){
     return result;
 }
 
+// Calculator memory.
+let memory = {
+    firstNum: '',
+    secondNum: '',
+    operation: '',
+    gotOpNow: false
+};
+
+
+
 function displayLengthCheck(displayBoard){
     return displayBoard.textContent.length <= 9;       
 }
+
 function dotCheck(displayBoard, value){
     return value == '.' && displayBoard.textContent.includes('.');
 }
+
 function errorCheck(displayBoard){
     return displayBoard.textContent === 'ERROR';
 }
@@ -52,18 +64,25 @@ function displayError(displayBoard){
 }
 
 function handleError(displayBoard){
+    //If there's an error on display.
     if(errorCheck(displayBoard)){
         clearDisplay();
         resetMemory();
         return false; //can continue since we cleared the error.
     }
+    //check for max length error occurring.
     if(!displayLengthCheck(displayBoard)){
         displayError(displayBoard);
         return true; //cant continue we cant display number after error
     }
 }
 
+/**
+ * This function updates the display for number buttons input.
+ */
 function updateDisplayNumber(value){
+    // If there's an operation click before then we clear display
+    // to enter second operand number.
     if(memory.gotOpNow == true){
         clearDisplay();
         memory.gotOpNow = false;
@@ -78,25 +97,19 @@ function updateDisplayNumber(value){
     displayBoard.textContent = displayBoard.textContent + value;
 }
 
-function updateDisplayOperation(value){
+/**
+ * This function updates the display for operation buttons input.
+ */
+function updateDisplayOperation(op){
     const displayBoard = document.querySelector('.display');
-    console.log(value.toString());
-    displayBoard.textContent = value.toString();
-    if('-Infinity'.includes(value.toString())){
+    displayBoard.textContent = op.toString();
+    handleError(displayBoard);
+    if('-Infinity'.includes(op.toString())){
         displayError(displayBoard);
     }
 }
 
-
-function handleNumberButtons(){
-    const numbersNodeList = document.querySelectorAll('.num');
-    numbersNodeList.forEach((button)=>{
-        button.addEventListener('click', ()=>{
-            updateDisplayNumber(button.textContent);
-        })
-    })
-}
-
+// Empty display check
 function emptyDisplay(){
     const displayBoard = document.querySelector('.display');
     return displayBoard.textContent === '';
@@ -112,14 +125,6 @@ function clearDisplay(){
     displayBoard.textContent = '';
 }
 
-let memory = {
-    firstNum: '',
-    secondNum: '',
-    operation: '',
-    gotOpNow: false
-};
-
-
 
 function resetMemory(){
     memory.firstNum = '';
@@ -128,7 +133,8 @@ function resetMemory(){
     gotOpNow = false;
 }
 
-function handleResult(){
+
+function handleResultOperation(){
     //display board should have the second number (or empty if nothing)
     const displayBoard = document.querySelector('.display');
     memory.secondNum = displayBoard.textContent;
@@ -137,6 +143,10 @@ function handleResult(){
     return result;
 }   
 
+/**
+ * This function handles the memory after we get an operation
+ * button clicked.
+ */
 function handleMemoryOperations(opButton){
     if(memory.gotOpNow == true){
         memory.operation = opButton.textContent;
@@ -144,35 +154,59 @@ function handleMemoryOperations(opButton){
     }
     if(memory.operation != ''){
         if(memory.firstNum != ''){
-            let result = handleResult();
+            let result = handleResultOperation();
             memory.firstNum = result;
             memory.secondNum = '';
             //get the new operation after handling the last one.
             memory.operation = opButton.textContent;
+            memory.gotOpNow = true;
+        }
+        else{
+            //Just forget the operation since theres no first operand..
+            memory.operation = '';
+            memory.gotOpNow = false;
         }
     }
     else{
-        memory.firstNum = getDisplayNumber();
-        memory.operation = opButton.textContent;
-        memory.gotOpNow = true;
+        if(getDisplayNumber() == ''){
+            // do nothing since there's no operand.    
+        }
+        else{
+            // save first operand.
+            memory.firstNum = getDisplayNumber();
+            memory.operation = opButton.textContent;
+            memory.gotOpNow = true;
+        }
     }
+}
+
+function handleNumberButtons(){
+    const numbersNodeList = document.querySelectorAll('.num');
+    numbersNodeList.forEach((button)=>{
+        button.addEventListener('click', ()=>{
+            updateDisplayNumber(button.textContent);
+        })
+    })
 }
 
 function handleOperationButtons(){
     const operationsNodeList = document.querySelectorAll('.op');
     operationsNodeList.forEach((button)=>{
         button.addEventListener('click', ()=>{
-            handleMemoryOperations(button);
-            
+            handleMemoryOperations(button); 
         })
     })
 }
 
+/**
+ * This function handles the memory after clicking equals button.
+ */
 function handleMemoryEquals(){
     if(memory.operation != ''){
         memory.secondNum = getDisplayNumber();
         let result = operate(memory.operation, memory.firstNum, memory.secondNum);
         updateDisplayOperation(result);
+        // Set the result as memory first number so we can continue later.
         memory.firstNum = result.toString();
         memory.operation = '';
         memory.gotOpNow = false;
@@ -200,6 +234,5 @@ function handleCalculator(){
     handleEqualsButton();
     handleClearButton();
 }
-
 
 handleCalculator();
