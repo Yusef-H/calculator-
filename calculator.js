@@ -36,16 +36,36 @@ function operate(operator, firstNum, secondNum){
     return result;
 }
 
+
+/**
+ * These functions are used to check some edge cases so 
+ * we can deal with them in other functions. 
+ */
 function displayLengthCheck(displayBoard){
     return displayBoard.textContent.length <= 9;       
 }
+function dotCheck(displayBoard, value){
+    return value == '.' && displayBoard.textContent.includes('.');
+}
+function errorCheck(displayBoard){
+    return displayBoard.textContent === 'ERROR';
+}
 
-function displayLengthError(displayBoard){
+
+function displayError(displayBoard){
     displayBoard.textContent = 'ERROR';
 }
 
-function dotCheck(displayBoard, value){
-    return value == '.' && displayBoard.textContent.includes('.');
+function handleError(displayBoard){
+    if(errorCheck(displayBoard)){
+        clearDisplay();
+        resetMemory();
+        return false; //can continue since we cleared the error.
+    }
+    if(!displayLengthCheck(displayBoard)){
+        displayError(displayBoard);
+        return true; //cant continue we cant display number after error
+    }
 }
 
 function updateDisplayNumber(value){
@@ -54,8 +74,7 @@ function updateDisplayNumber(value){
         memory.gotOpNow = false;
     }
     const displayBoard = document.querySelector('.display');
-    if(!displayLengthCheck(displayBoard)){
-        displayLengthError(displayBoard);
+    if(handleError(displayBoard)){
         return;
     }
     if(dotCheck(displayBoard, value)){
@@ -64,11 +83,11 @@ function updateDisplayNumber(value){
     displayBoard.textContent = displayBoard.textContent + value;
 }
 
-function updateDisplay(value){
+function updateDisplayOperation(value){
     const displayBoard = document.querySelector('.display');
     displayBoard.textContent = value.toString();
-    if(!displayLengthCheck(displayBoard)){
-        displayLengthError(displayBoard);
+    if(handleError(displayBoard)){
+        return;
     }
 }
 
@@ -118,7 +137,7 @@ function handleResult(){
     const displayBoard = document.querySelector('.display');
     memory.secondNum = displayBoard.textContent;
     let result = operate(memory.operation, memory.firstNum, memory.secondNum);
-    updateDisplay(result);
+    updateDisplayOperation(result);
     return result;
 }   
 
@@ -158,7 +177,7 @@ function handleMemoryEquals(){
     if(memory.operation != ''){
         memory.secondNum = getDisplayNumber();
         let result = operate(memory.operation, memory.firstNum, memory.secondNum);
-        updateDisplay(result);
+        updateDisplayOperation(result);
         memory.firstNum = result.toString();
         memory.operation = '';
         memory.gotOpNow = false;
