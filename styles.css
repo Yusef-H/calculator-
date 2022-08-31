@@ -1,5 +1,7 @@
 
 body{
+    height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7,8 +9,10 @@ body{
 }
 .calculator{
     display: grid;
-    height: 550px;
-    width: 500px;
+
+    height: 80vh;
+    width: 75vw;
+    max-width: 550px;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(7, 1fr);
     background-color: black;
@@ -34,7 +38,7 @@ body{
     grid-column-start: 1;
     grid-column-end: 5;
     border-radius: 8px;
-    font-size: 30px;
+    font-size: 40px;
     font-weight: bolder;
     background-color: rgb(252, 252, 136);
 }
