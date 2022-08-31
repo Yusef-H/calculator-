@@ -33,7 +33,7 @@ function operate(operator, firstNum, secondNum){
             result = divide(firstNum, secondNum);
             break;
     }
-    return result;
+    return +result.toFixed(2);
 }
 
 // Calculator memory.
